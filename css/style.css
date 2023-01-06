@@ -1,0 +1,37 @@
+.one__title {
+    background-color: gray;
+    padding: 10px;
+    max-width: 30px;
+    text-align: center;
+    position: relative;
+    left: 0px;
+}
+
+.canvas {
+    background: white;
+}
+
+.hero__img {
+    width: 288px;
+    height: 288px;
+    overflow: hidden;
+    position: relative;
+    left: 0;
+}
+
+.hero-sprite__img {
+    width: 1728px;
+    height: 1152px;
+    position: relative;
+    top: -576px;
+    left: 0;
+    transform: scale(-1, 1);
+}
+
+.fullscreen__img {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
