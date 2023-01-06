@@ -31,6 +31,7 @@ const rightHandler = () => {
         rightPosition = 0;
     }
     heroImg.style.left = `-${rightPosition*288}px`;
+    heroImg.style.top = `-576px`;
     imgBlock.style.left = `${imgBlockPosition*20}px`;
 }
 
@@ -44,11 +45,28 @@ const leftHandler = () => {
         rightPosition = 0;
     }
     heroImg.style.left = `-${rightPosition*288}px`;
+    heroImg.style.top = `-576px`;
     imgBlock.style.left = `${imgBlockPosition*20}px`;
+}
+
+const standHandler = () => {
+    heroImg.style.transform = "scale(-1, 1)";
+    rightPosition = rightPosition + 1;
+    imgBlockPosition = imgBlockPosition + 1;
+    if (rightPosition > 4) {
+        rightPosition = 0;
+    }
+    heroImg.style.left = `-${rightPosition*288}px`;
+    heroImg.style.top = `0px`;
 }
 
 //ОБРАБОТЧИКИ СОБЫТИЙ
 let timer = null;
+const lifeCycle = () => {
+    timer = setInterval(() => {
+        standHandler();
+    }, 150);
+}
 let x = 0;
 let halfWidth = window.screen.width / 2;
 let onTouchStart = (event) => {
@@ -60,6 +78,7 @@ let onTouchStart = (event) => {
 }
 let onTouchEnd = (event) => {
     clearInterval(timer);
+    lifeCycle();
 }
 
 window.onmousedown = onTouchStart;
