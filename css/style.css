@@ -36,3 +36,61 @@
     top: 20px;
     right: 20px;
 }
+
+.jump__block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 144px;
+    height: 144px;
+    overflow: hidden;
+    opacity: .5;
+}
+
+.hero__jump-img {
+    position: absolute;
+    top: -144px;
+    left: -144px;
+    width: 864px;
+    height: 576px;
+    transform: scale(-1, 1);
+}
+
+.jump__block-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 140px;
+    height: 140px;
+    border: 2px solid blue;
+    border-radius: 50%;
+}
+
+.hit__block {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 144px;
+    height: 144px;
+    overflow: hidden;
+    opacity: .5;
+}
+
+.hero__hit-img {
+    position: absolute;
+    top: -452px;
+    left: -442px;
+    width: 864px;
+    height: 576px;
+    transform: scale(-1, 1);
+}
+
+.hit__block-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 140px;
+    height: 140px;
+    border: 2px solid blue;
+    border-radius: 50%;
+}
