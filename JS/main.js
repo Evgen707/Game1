@@ -49,12 +49,13 @@ const leftHandler = () => {
     imgBlock.style.left = `${imgBlockPosition*20}px`;
 }
 
+//НА МЕСТЕ
 const standHandler = () => {
     heroImg.style.transform = "scale(-1, 1)";
     rightPosition = rightPosition + 1;
     imgBlockPosition = imgBlockPosition + 1;
-    if (rightPosition > 4) {
-        rightPosition = 0;
+    if (rightPosition > 5) {
+        rightPosition = 1;
     }
     heroImg.style.left = `-${rightPosition*288}px`;
     heroImg.style.top = `0px`;
