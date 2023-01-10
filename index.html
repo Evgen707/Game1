@@ -10,23 +10,28 @@
 </head>
 
 <body>
-    <div class="canvas" id="canvas">
-        <img class="fullscreen__img" id="fsBtn" src="img/fullscreen.png" alt="">
-        <div class="hero__img" id="img-block">
-            <img class="hero-sprite__img" id="hero-img" src="img/hero-sprite.png" alt="">
+    <div class="canvas" id="canvas" oncontextmenu="return false;">
+        <div>
+            <img class="background-img" src="img/assets/2 Background/Day/Background.png" alt="">
         </div>
-    </div>
-    <div class="jump__block" id="jump__block">
-        <img class="hero__jump-img" src="img/hero-sprite.png" alt="">
-        <div class="jump__block-img"> </div>
-    </div>
-    <div class="hit__block" id="hit__block">
-        <img class="hero__hit-img" src="img/hero-sprite.png" alt="">
-        <div class="hit__block-img"> </div>
-    </div>
+        <img class="fsBtn" id="fsBtn" src="img/fullscreen.png" alt="">
+        <div class="img-block" id="img-block">
+            <img class="hero-img" id="hero-img" src="img/hero-sprite.png" alt="">
+        </div>
 
+        <div class="jump__block" id="jump-block">
+            <img class="hero__jump-img" src="img/hero-sprite.png" alt="">
+            <div class="jump__block-img">
+
+            </div>
+        </div>
+        <div class="hit-block" id="hit-block">
+            <img class="hero__hit-img" src="img/hero-sprite.png" alt="">
+            <div class="hit__block-img"> </div>
+        </div>
+        <p class="info" id="info"></p>
+    </div>
     <script src="JS/main.js"></script>
 </body>
-
 
 </html>

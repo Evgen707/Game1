@@ -11,25 +11,25 @@
     background: white;
 }
 
-.hero__img {
-    width: 288px;
-    height: 288px;
+.img-block {
+    width: 96px;
+    height: 96px;
     overflow: hidden;
-    position: relative;
+    position: absolute;
     left: 0;
+    bottom: 64px;
 }
 
-.hero-sprite__img {
-    width: 1728px;
-    height: 1152px;
+.hero-img {
+    width: 576px;
+    height: 384px;
     position: relative;
     top: 0;
-    /* -576px; */
-    left: -288px;
+    left: -96px;
     transform: scale(-1, 1);
 }
 
-.fullscreen__img {
+.fsBtn {
     width: 40px;
     height: 40px;
     position: absolute;
@@ -66,7 +66,7 @@
     border-radius: 50%;
 }
 
-.hit__block {
+.hit-block {
     position: absolute;
     top: 0;
     right: 0;
@@ -93,4 +93,22 @@
     height: 140px;
     border: 2px solid blue;
     border-radius: 50%;
+}
+
+.background-img {
+    position: absolute;
+    left: 0;
+    bottom: 64px;
+    width: 100%;
+    height: 100%;
+}
+
+.info {
+    position: absolute;
+    left: 64px;
+    top: 96px;
+    background-color: black;
+    color: white;
+    font-size: 20pt;
+    padding: 20px;
 }
