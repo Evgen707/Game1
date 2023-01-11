@@ -4,6 +4,7 @@ let imgBlockPosition = 0;
 let direction = 'right';
 let hit = false;
 let jump = false;
+let fall = false;
 let timer = null;
 let x = 0;
 let halfWidth = window.screen.width / 2;
@@ -21,7 +22,8 @@ let fsBtn = window.document.querySelector('#fsBtn');
 let info = window.document.querySelector('#info');
 
 let heroX = Math.floor((Number.parseInt(imgBlock.style.left) + 32) / 32);
-let heroY = Math.floor((Number.parseInt(imgBlock.style.left)) / 32);
+let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom) / 32);
+
 
 jumpBlock.style.top = `${window.screen.height/2 - 144/2}px`;
 hitBlock.style.top = `${window.screen.height/2 - 144/2}px`;
@@ -45,8 +47,8 @@ hitBlock.onclick = () => { hit = true };
 //ФУНКЦИИ
 
 const updateHeroXY = () => {
-    heroX = Math.floor((Number.parseInt(imgBlock.style.left) + 32) / 32);
-    heroY = Math.floor((Number.parseInt(imgBlock.style.left)) / 32);
+    heroX = Math.ceil((Number.parseInt(imgBlock.style.left) + 32) / 32);
+    heroY = Math.ceil(Number.parseInt(imgBlock.style.bottom) / 32);
 
 
     info.innerText = `heroX = ${heroX}, heroY = ${heroY}`;
@@ -54,6 +56,7 @@ const updateHeroXY = () => {
 
 //ПАДЕНИЕ
 const checkFalling = () => {
+    updateHeroXY();
     let isFalling = true;
     for (let i = 0; i < tileArray.length; i++) {
         if ((tileArray[i][0] === heroX) && ((tileArray[i][1] + 1) === heroY)) {
@@ -63,9 +66,17 @@ const checkFalling = () => {
 
     if (isFalling) {
         info.innerText = info.innerText + ', Falling';
+        fall = true;
     } else {
         info.innerText = info.innerText + ', Not falling';
+        fall = false;
     }
+}
+
+const fallHandler = () => {
+    heroImg.style.top = '-96px'
+    imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-40}px`;
+    checkFalling();
 }
 
 //ДВИЖЕНИЕ ВПРАВО
@@ -80,7 +91,6 @@ const rightHandler = () => {
     heroImg.style.top = '-192px';
     imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-    updateHeroXY();
     checkFalling();
 }
 
@@ -96,7 +106,6 @@ const leftHandler = () => {
     heroImg.style.top = '-192px';
     imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-    updateHeroXY();
     checkFalling();
 }
 
@@ -126,6 +135,8 @@ const standHandler = () => {
     rightPosition = rightPosition + 1;
     heroImg.style.left = `-${rightPosition * 96}px`;
     heroImg.style.top = 0;
+
+    checkFalling();
 }
 
 //УДАР
@@ -167,6 +178,10 @@ const jumpHandler = () => {
                 if (rightPosition > 4) {
                     rightPosition = 1;
                     jump = false;
+                    imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
+                    imgBlockPosition = imgBlockPosition + 10;
+                    imgBlock.style.left = `${imgBlockPosition * 20}px`;
+
                 }
                 break;
             }
@@ -176,6 +191,9 @@ const jumpHandler = () => {
                 if (rightPosition > 3) {
                     rightPosition = 0;
                     jump = false;
+                    imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
+                    imgBlockPosition = imgBlockPosition - 10;
+                    imgBlock.style.left = `${imgBlockPosition * 20}px`;
                 }
                 break;
             }
@@ -220,6 +238,8 @@ const lifeCycle = () => {
             hitHandler();
         } else if (jump) {
             jumpHandler();
+        } else if (fall) {
+            fallHandler();
         } else {
             standHandler();
         }
@@ -255,7 +275,6 @@ const addTiles = (i) => {
     tileBlack.style.bottom = 0;
     canvas.appendChild(tileBlack);
 }
-
 
 const start = () => {
     lifeCycle();

@@ -16,15 +16,13 @@
     height: 96px;
     overflow: hidden;
     position: absolute;
-    left: 0;
-    bottom: 64px;
 }
 
 .hero-img {
     width: 576px;
     height: 384px;
     position: relative;
-    top: 0;
+    top: 0px;
     left: -96px;
     transform: scale(-1, 1);
 }
@@ -104,6 +102,7 @@
 }
 
 .info {
+    display: none;
     position: absolute;
     left: 64px;
     top: 96px;
