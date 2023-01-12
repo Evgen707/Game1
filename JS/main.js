@@ -276,7 +276,7 @@ const addTiles = (i) => {
     canvas.appendChild(tileBlack);
 }
 
-
+//ВРАГ1
 class Enemy {
 
     ATTACK = 'attack';
@@ -288,6 +288,7 @@ class Enemy {
     state;
     animateWasChanged;
 
+    startX;
     posX;
     posY;
     img;
@@ -296,16 +297,21 @@ class Enemy {
     spritePos;
     spriteMaxPos;
     timer;
+    dir;
+    stop;
 
     sourcePath;
     constructor(x, y) {
         this.posX = x;
+        this.startX = this.posX;
         this.posY = y;
         this.blockSize = '96px';
         this.spritePos = 0;
         this.spriteMaxPos = 3;
         this.timer = 0;
         this.sourcePath = 'img/assets/Enemies/1/';
+        this.dir = .5;
+        this.stop = false;
 
         this.state = this.IDLE;
         this.animateWasChanged = false;
@@ -374,6 +380,12 @@ class Enemy {
             }
 
             this.spritePos++;
+            this.checkCollide();
+            if (!this.stop) {
+                this.move();
+            } else {
+                this.changeAnimate(this.ATTACK);
+            }
             this.animate();
         }, 150);
     }
@@ -407,6 +419,35 @@ class Enemy {
     changeAnimate(stateStr) {
         this.state = stateStr;
         this.animateWasChanged = true;
+    }
+    move() {
+        if (this.posX > this.startX + 10) {
+            this.dir *= -1;
+            this.img.style.transform = "scale(-1,1)"
+        } else if (this.posX <= this.startX) {
+            this.dir = Math.abs(this.dir);
+            this.img.style.transform = "scale(1,1)"
+
+        }
+        this.posX += this.dir;
+        this.block.style.left = this.posX * 32 + 'px';
+    }
+    checkCollide() {
+        if (heroY == this.posY) {
+            if (heroX == this.posX) {
+                this.stop = true;
+            } else if (heroX == (this.posX + 3)) {
+                // attack right side
+                this.stop = true;
+            } else {
+                this.stop = false;
+                this.changeAnimate(this.WALK);
+
+            }
+        } else {
+            this.stop = false;
+            this.changeAnimate(this.WALK);
+        }
     }
 }
 
