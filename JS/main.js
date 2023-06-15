@@ -12,6 +12,9 @@ if (window.screen.availLeft) {
     halfWidth = window.screen.width + window.screen.availLeft / 2;
 }
 let tileArray = [];
+let maxLives = 6;
+let lives = 6;
+let heartsArray = [];
 
 let jumpBlock = window.document.querySelector('#jump-block');
 let hitBlock = window.document.querySelector('#hit-block');
@@ -20,6 +23,7 @@ let imgBlock = window.document.querySelector('#img-block');
 let canvas = window.document.querySelector('#canvas');
 let fsBtn = window.document.querySelector('#fsBtn');
 let info = window.document.querySelector('#info');
+let backgroundCanvas = window.document.querySelector('#background-canvas')
 
 let heroX = Math.floor((Number.parseInt(imgBlock.style.left) + 32) / 32);
 let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom) / 32);
@@ -75,7 +79,7 @@ const checkFalling = () => {
 
 const fallHandler = () => {
     heroImg.style.top = '-96px'
-    imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-40}px`;
+    imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-32}px`;
     checkFalling();
 }
 
@@ -254,7 +258,7 @@ const createTile = (x, y = 1) => {
     tile.style.position = 'absolute';
     tile.style.left = x * 32 + 'px';
     tile.style.bottom = y * 32 + 'px';
-    canvas.appendChild(tile);
+    backgroundCanvas.appendChild(tile);
 
     tileArray.push([x, y]);
 }
@@ -273,7 +277,7 @@ const addTiles = (i) => {
     tileBlack.style.position = 'absolute';
     tileBlack.style.left = i * 32 + 'px';
     tileBlack.style.bottom = 0;
-    canvas.appendChild(tileBlack);
+    backgroundCanvas.appendChild(tileBlack);
 }
 
 //ВРАГ1
@@ -384,7 +388,9 @@ class Enemy {
             if (!this.stop) {
                 this.move();
             } else {
-                this.changeAnimate(this.ATTACK);
+                if (this.state != this.HURT) {
+                    this.changeAnimate(this.ATTACK);
+                }
             }
             this.animate();
         }, 150);
@@ -392,6 +398,13 @@ class Enemy {
     animate() {
         if (this.spritePos > this.spriteMaxPos) {
             this.spritePos = 0;
+            if (this.state === this.ATTACK) {
+                lives--;
+                updateHearts();
+            }
+            if (this.state === this.HURT) {
+                this.changeAnimate(this.ATTACK);
+            }
         }
         this.img.style.left = `${-(this.spritePos) * (this.blockSize)}px`;
         this.blockSize = Number.parseInt(this.blockSize);
@@ -435,9 +448,16 @@ class Enemy {
     checkCollide() {
         if (heroY == this.posY) {
             if (heroX == this.posX) {
+                //attack left side
+                if (hit) {
+                    this.changeAnimate(this.HURT);
+                }
                 this.stop = true;
-            } else if (heroX == (this.posX + 3)) {
+            } else if (heroX == (this.posX + 2)) {
                 // attack right side
+                if (hit) {
+                    this.changeAnimate(this.HURT);
+                }
                 this.stop = true;
             } else {
                 this.stop = false;
@@ -451,6 +471,56 @@ class Enemy {
     }
 }
 
+//ЗДОРОВЬЕ
+class Heart {
+    img;
+    x;
+    constructor(x, src) {
+        this.x = x + 1;
+        this.img = window.document.createElement('img');
+        this.img.src = src;
+        this.img.style.position = 'absolute';
+        this.img.style.left = this.x * 32 + 'px';
+        this.img.style.bottom = ((window.screen.height / 32) - 2) * 32 + 'px';
+        this.img.style.width = '32px';
+        this.img.style.height = '32px';
+
+        canvas.appendChild(this.img);
+    }
+}
+
+class HeartEmpty extends Heart {
+    constructor(x) {
+        super(x, 'img/assets/Hearts/heart_empty.png')
+    }
+}
+
+class HeartRed extends Heart {
+    constructor(x) {
+        super(x, 'img/assets/Hearts/heart_red.png')
+    }
+}
+
+const addHearts = () => {
+    for (let i = 0; i < maxLives; i++) {
+        let heartEmpty = new HeartEmpty(i);
+        let heartRed = new HeartRed(i);
+        heartsArray.push(heartRed);
+    }
+}
+
+const updateHearts = () => {
+    if (lives <= 0) {
+        finalTimerText.innerText = 'Game over';
+        imgBlock.style.display = 'none';
+    }
+    for (let i = 0; i < lives; i++) {
+        heartsArray[i].img.style.display = 'block';
+    }
+    for (let i = lives; i < maxLives; i++) {
+        heartsArray[i].img.style.display = 'none';
+    }
+}
 const start = () => {
     lifeCycle();
     for (let i = 0; i < 50; i = i + 1) {
@@ -463,5 +533,8 @@ const start = () => {
     createTilesPlatform(15, 5, 10);
 
     let enemy = new Enemy(10, 2);
+
+    addHearts();
+    updateHearts();
 }
 start();
