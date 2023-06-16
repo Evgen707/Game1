@@ -15,6 +15,9 @@ let tileArray = [];
 let maxLives = 6;
 let lives = 6;
 let heartsArray = [];
+let isRightSideBlocked = false;
+let isLeftSideBlocked = false;
+let wasHeroHit = false;
 
 let jumpBlock = window.document.querySelector('#jump-block');
 let hitBlock = window.document.querySelector('#hit-block');
@@ -85,32 +88,36 @@ const fallHandler = () => {
 
 //ДВИЖЕНИЕ ВПРАВО
 const rightHandler = () => {
-    heroImg.style.transform = "scale(-1,1)";
-    rightPosition = rightPosition + 1;
-    imgBlockPosition = imgBlockPosition + 1;
-    if (rightPosition > 5) {
-        rightPosition = 0;
-    }
-    heroImg.style.left = `-${rightPosition * 96}px`;
-    heroImg.style.top = '-192px';
-    imgBlock.style.left = `${imgBlockPosition * 20}px`;
+    if (!isRightSideBlocked) {
+        heroImg.style.transform = "scale(-1,1)";
+        rightPosition = rightPosition + 1;
+        imgBlockPosition = imgBlockPosition + 1;
+        if (rightPosition > 5) {
+            rightPosition = 0;
+        }
+        heroImg.style.left = `-${rightPosition * 96}px`;
+        heroImg.style.top = '-192px';
+        imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-    checkFalling();
+        checkFalling();
+    }
 }
 
 //ДВИЖЕНИЕ ВЛЕВО
 const leftHandler = () => {
-    heroImg.style.transform = "scale(1,1)";
-    rightPosition = rightPosition + 1;
-    imgBlockPosition = imgBlockPosition - 1;
-    if (rightPosition > 5) {
-        rightPosition = 0;
-    }
-    heroImg.style.left = `-${rightPosition * 96}px`;
-    heroImg.style.top = '-192px';
-    imgBlock.style.left = `${imgBlockPosition * 20}px`;
+    if (!isLeftSideBlocked) {
+        heroImg.style.transform = "scale(1,1)";
+        rightPosition = rightPosition + 1;
+        imgBlockPosition = imgBlockPosition - 1;
+        if (rightPosition > 5) {
+            rightPosition = 0;
+        }
+        heroImg.style.left = `-${rightPosition * 96}px`;
+        heroImg.style.top = '-192px';
+        imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-    checkFalling();
+        checkFalling();
+    }
 }
 
 //НА МЕСТЕ
@@ -152,6 +159,7 @@ const hitHandler = () => {
                 if (rightPosition > 4) {
                     rightPosition = 1;
                     hit = false;
+                    wasHeroHit = true;
                 }
                 break;
             }
@@ -161,6 +169,7 @@ const hitHandler = () => {
                 if (rightPosition > 3) {
                     rightPosition = 0;
                     hit = false;
+                    wasHeroHit = true;
                 }
                 break;
             }
@@ -392,6 +401,11 @@ class Enemy {
                     this.changeAnimate(this.ATTACK);
                 }
             }
+            if (wasHeroHit) {
+                wasHeroHit = false; //чтобы не закикливалась логика проверки нанесения урона
+                this.changeAnimate(this.HURT); // урон врагу будет наноситься только тогда, когда анимация атаки героя закончит свой цикл
+                this.showHurt();
+            }
             this.animate();
         }, 150);
     }
@@ -448,26 +462,34 @@ class Enemy {
     checkCollide() {
         if (heroY == this.posY) {
             if (heroX == this.posX) {
-                //attack left side
-                if (hit) {
-                    this.changeAnimate(this.HURT);
-                }
+                //attack left side                
+                isRightSideBlocked = true; //заблокировать передвижение вправо
                 this.stop = true;
-            } else if (heroX == (this.posX + 2)) {
+            } else if (heroX == (this.posX + 3)) {
                 // attack right side
-                if (hit) {
-                    this.changeAnimate(this.HURT);
-                }
+                isLeftSideBlocked = true; //заблокировать передвижение влево
                 this.stop = true;
             } else {
+                isRightSideBlocked = false; // если убегает от врага разблокировать дв. влево
+                isLeftSideBlocked = false; // если убегает от врага разблокировать дв. влево
                 this.stop = false;
                 this.changeAnimate(this.WALK);
 
             }
         } else {
+            isRightSideBlocked = false; // если подпрыгнет разблокировать дв. вправо
+            isLeftSideBlocked = false; // если подпрыгнет разблокировать дв. влево
             this.stop = false;
             this.changeAnimate(this.WALK);
         }
+    }
+    showHurt() {
+        let text = window.document.createElement('p');
+        text.innerText = '-10';
+        text.style.position = 'absolute';
+        text.style.left = this.block.style.left; //Number.parseInt(this.block.style.left);
+        text.style.bottom = this.block.style.bottom; //Number.parseInt(this.block.style.bottom);
+        canvas.appendChild(text);
     }
 }
 
