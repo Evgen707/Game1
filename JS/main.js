@@ -12,6 +12,8 @@ if (window.screen.availLeft) {
     halfWidth = window.screen.width + window.screen.availLeft / 2;
 }
 let tileArray = [];
+let objectsArray = [];
+let enemiesArray = [];
 let maxLives = 6;
 let lives = 6;
 let heartsArray = [];
@@ -52,6 +54,28 @@ hitBlock.onclick = () => { hit = true };
 
 
 //ФУНКЦИИ
+
+// Движение камеры влево
+const moveWorldLeft = () => {
+    objectsArray.map((elem, index) => {
+        elem.style.left = `${Number.parseInt(elem.style.left) - 32}px`
+    });
+    tileArray.map(elem => {
+        elem[0] = elem[0] - 1;
+    });
+    enemiesArray.map(elem => elem.moveLeft());
+}
+
+// Движение камеры вправо
+const moveWorldRight = () => {
+    objectsArray.map((elem, index) => {
+        elem.style.left = `${Number.parseInt(elem.style.left) + 32}px`
+    });
+    tileArray.map(elem => {
+        elem[0] = elem[0] + 1;
+    });
+    enemiesArray.map(elem => elem.moveRight());
+}
 
 const updateHeroXY = () => {
     heroX = Math.ceil((Number.parseInt(imgBlock.style.left) + 32) / 32);
@@ -101,6 +125,7 @@ const rightHandler = () => {
 
         checkFalling();
         wasHeroHit = false;
+        moveWorldLeft();
     }
 }
 
@@ -119,6 +144,7 @@ const leftHandler = () => {
 
         checkFalling();
         wasHeroHit = false;
+        moveWorldRight();
     }
 }
 
@@ -270,25 +296,36 @@ const createTile = (x, y = 1) => {
     tile.style.left = x * 32 + 'px';
     tile.style.bottom = y * 32 + 'px';
     backgroundCanvas.appendChild(tile);
-
+    objectsArray.push(tile);
     tileArray.push([x, y]);
 }
+const createTileBlack = (x, y = 0) => {
+    let tileBlack = window.document.createElement('img');
+    tileBlack.src = 'img/assets/1 Tiles/Tile_04.png';
+    tileBlack.style.position = 'absolute';
+    tileBlack.style.left = x * 32 + 'px';
+    tileBlack.style.bottom = y * 32 + 'px';
+    objectsArray.push(tileBlack);
+    backgroundCanvas.appendChild(tileBlack);
+}
+const createTilesPlatform = (startX, endX, floor) => {
+    for (let x_pos = startX - 1; x_pos < endX; x_pos++) {
+        createTile(x_pos, floor);
+    }
+}
 
-const createTilesPlatform = (startX, startY, length) => {
-    for (let i = 0; i < length; i++) {
-        createTile(startX + i, startY);
+const createTilesBlackBlock = (startX, endX, floor) => {
+    for (let y_pos = 0; y_pos < floor; y_pos++) {
+        for (let x_pos = startX - 1; x_pos < endX; x_pos++) {
+            createTileBlack(x_pos, y_pos);
+        }
     }
 }
 
 //ЧЕРНЫЕ БЛОКИ
 const addTiles = (i) => {
     createTile(i);
-    let tileBlack = window.document.createElement('img');
-    tileBlack.src = 'img/assets/1 Tiles/Tile_04.png';
-    tileBlack.style.position = 'absolute';
-    tileBlack.style.left = i * 32 + 'px';
-    tileBlack.style.bottom = 0;
-    backgroundCanvas.appendChild(tileBlack);
+    createTileBlack(i);
 }
 
 //ВРАГ1
@@ -336,7 +373,7 @@ class Enemy {
         this.createImg();
 
         this.changeAnimate(this.WALK);
-
+        enemiesArray.push(this);
         this.lifeCycle();
     }
     createImg() {
@@ -524,6 +561,14 @@ class Enemy {
         }, 100);
         canvas.appendChild(text);
     }
+    moveRight() {
+        this.startX += 1;
+        this.posX += 1;
+    }
+    moveLeft() {
+        this.startX -= 1;
+        this.posX -= 1;
+    }
 }
 
 //ЗДОРОВЬЕ
@@ -576,19 +621,58 @@ const updateHearts = () => {
         heartsArray[i].img.style.display = 'none';
     }
 }
-const start = () => {
-    lifeCycle();
-    for (let i = 0; i < 50; i = i + 1) {
-        // if((i > 10) && (i < 17) ){
-        // 	continue;
-        // }
-        addTiles(i);
+
+const createBackImg = (i) => {
+    let img = window.document.createElement('img');
+    img.src = 'img/assets/2 Background/Day/Background.png';
+    img.style.position = 'absolute';
+    img.style.left = i * window.screen.width + 'px';
+    img.style.bottom = 32 + 'px';
+    img.style.width = window.screen.width + 'px';
+    img.style.height = window.screen.height + 'px';
+    backgroundCanvas.appendChild(img);
+    objectsArray.push(img);
+}
+
+const addBackgroundImages = () => {
+    for (let i = 0; i < 5; i++) {
+        createBackImg(i);
     }
-    createTilesPlatform(10, 10, 10);
-    createTilesPlatform(15, 5, 10);
+}
 
-    let enemy = new Enemy(10, 2);
+const buildLevel = () => {
+    let flor1 = 0;
+    let flor2 = 4;
+    let flor3 = 8;
 
+    createTilesPlatform(0, 14, flor1);
+    createTilesPlatform(33, 41, flor1);
+    createTilesPlatform(76, 91, flor1);
+    createTilesPlatform(106, 119, flor1);
+
+
+    createTilesPlatform(15, 32, flor2);
+    createTilesPlatform(42, 53, flor2);
+    createTilesPlatform(64, 75, flor2);
+    createTilesPlatform(92, 105, flor2);
+
+    createTilesPlatform(8, 20, flor3);
+    createTilesPlatform(54, 63, flor3);
+    createTilesPlatform(75, 87, flor3);
+    createTilesPlatform(99, 111, flor3);
+
+    createTilesBlackBlock(15, 32, flor2);
+    createTilesBlackBlock(42, 53, flor2);
+    createTilesBlackBlock(64, 75, flor2);
+    createTilesBlackBlock(92, 105, flor2);
+    createTilesBlackBlock(54, 63, flor3);
+
+}
+
+const start = () => {
+    addBackgroundImages();
+    buildLevel();
+    lifeCycle();
     addHearts();
     updateHearts();
 }
