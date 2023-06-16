@@ -100,6 +100,7 @@ const rightHandler = () => {
         imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
         checkFalling();
+        wasHeroHit = false;
     }
 }
 
@@ -117,6 +118,7 @@ const leftHandler = () => {
         imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
         checkFalling();
+        wasHeroHit = false;
     }
 }
 
@@ -300,6 +302,7 @@ class Enemy {
 
     state;
     animateWasChanged;
+    lives;
 
     startX;
     posX;
@@ -325,6 +328,7 @@ class Enemy {
         this.sourcePath = 'img/assets/Enemies/1/';
         this.dir = .5;
         this.stop = false;
+        this.lives = 30;
 
         this.state = this.IDLE;
         this.animateWasChanged = false;
@@ -397,14 +401,11 @@ class Enemy {
             if (!this.stop) {
                 this.move();
             } else {
-                if (this.state != this.HURT) {
-                    this.changeAnimate(this.ATTACK);
+                if (this.state != this.DEATH) {
+                    if (this.state != this.HURT) {
+                        this.changeAnimate(this.ATTACK);
+                    }
                 }
-            }
-            if (wasHeroHit) {
-                wasHeroHit = false; //чтобы не закикливалась логика проверки нанесения урона
-                this.changeAnimate(this.HURT); // урон врагу будет наноситься только тогда, когда анимация атаки героя закончит свой цикл
-                this.showHurt();
             }
             this.animate();
         }, 150);
@@ -418,6 +419,13 @@ class Enemy {
             }
             if (this.state === this.HURT) {
                 this.changeAnimate(this.ATTACK);
+                if (this.dir > 0) this.spritePos = 1;
+            }
+            if (this.state === this.DEATH) {
+                clearInterval(this.timer);
+                isRightSideBlocked = false;
+                isLeftSideBlocked = false;
+                if (this.dir > 0) this.spritePos = 5;
             }
         }
         this.img.style.left = `${-(this.spritePos) * (this.blockSize)}px`;
@@ -459,14 +467,29 @@ class Enemy {
         this.posX += this.dir;
         this.block.style.left = this.posX * 32 + 'px';
     }
+    checkHurt() {
+        if (wasHeroHit) {
+            if (this.lives <= 10) {
+                wasHeroHit = false;
+                this.changeAnimate(this.DEATH);
+            } else {
+                wasHeroHit = false; //чтобы не зацикливалась логика проверки нанесения урона
+                this.changeAnimate(this.HURT); // урон врагу будет наноситься только тогда, когда анимация атаки героя закончит свой цикл
+                this.showHurt();
+                this.lives -= 10;
+            }
+        }
+    }
     checkCollide() {
         if (heroY == this.posY) {
             if (heroX == this.posX) {
-                //attack left side                
+                //attack left side  
+                this.checkHurt();
                 isRightSideBlocked = true; //заблокировать передвижение вправо
                 this.stop = true;
             } else if (heroX == (this.posX + 3)) {
                 // attack right side
+                this.checkHurt();
                 isLeftSideBlocked = true; //заблокировать передвижение влево
                 this.stop = true;
             } else {
@@ -484,11 +507,21 @@ class Enemy {
         }
     }
     showHurt() {
+        let pos = 0;
         let text = window.document.createElement('p');
         text.innerText = '-10';
         text.style.position = 'absolute';
-        text.style.left = this.block.style.left; //Number.parseInt(this.block.style.left);
-        text.style.bottom = this.block.style.bottom; //Number.parseInt(this.block.style.bottom);
+        text.style.left = `${(this.dir < 0) ? Number.parseInt(this.block.style.left)+50 : Number.parseInt(this.block.style.left)+10}px`;
+        text.style.bottom = `${Number.parseInt(this.block.style.bottom)+32}px`;
+        text.style.fontFamily = "'Bungee Spice', cursive";
+        let hurtTimer = setInterval(() => {
+            text.style.bottom = `${Number.parseInt(text.style.bottom)+16}px`;
+            if (pos > 2) {
+                clearInterval(hurtTimer);
+                text.style.display = 'none'
+            }
+            pos++;
+        }, 100);
         canvas.appendChild(text);
     }
 }
