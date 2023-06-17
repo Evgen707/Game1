@@ -640,10 +640,64 @@ const addBackgroundImages = () => {
     }
 }
 
+const createImfEl = (src, x, y) => {
+    let img = window.document.createElement('img');
+    img.src = src;
+    img.style.position = 'absolute';
+    img.style.left = x * 32 + "px";
+    img.style.bottom = y * 32 + "px";
+    img.style.transform = 'scale(2, 2) translate(-25%, -25%)';
+    backgroundCanvas.appendChild(img);
+    objectsArray.push(img);
+}
+
+const addDecorationElements = (f1, f2, f3) => {
+    let basePath = 'img/assets/3 Objects';
+    //Tree
+    createImfEl(basePath + '/Other/Tree4.png', 4, f1);
+    createImfEl(basePath + '/Other/Tree2.png', 35, f1);
+    createImfEl(basePath + '/Other/Tree3.png', 78, f1);
+    createImfEl(basePath + '/Other/Tree4.png', 108, f1);
+    createImfEl(basePath + '/Other/Tree1.png', 65, f2);
+
+    //Stone
+    createImfEl(basePath + '/Stones/6.png', 10, f1);
+    createImfEl(basePath + '/Stones/6.png', 111, f1);
+    createImfEl(basePath + '/Stones/6.png', 38, f1);
+    createImfEl(basePath + '/Stones/6.png', 102, f3);
+
+    //Ramp
+    createImfEl(basePath + '/Other/Ramp1.png', 22, f2);
+    createImfEl(basePath + '/Other/Ramp2.png', 26, f2);
+    createImfEl(basePath + '/Other/Ramp1.png', 95, f2);
+    createImfEl(basePath + '/Other/Ramp2.png', 99, f2);
+    createImfEl(basePath + '/Other/Ramp1.png', 45, f2);
+    createImfEl(basePath + '/Other/Ramp2.png', 49, f2);
+
+    //Bushes
+    createImfEl(basePath + '/Bushes/17.png', 84, f1);
+    createImfEl(basePath + '/Bushes/17.png', 19, f2);
+    createImfEl(basePath + '/Bushes/17.png', 50, f2);
+    createImfEl(basePath + '/Bushes/17.png', 69, f2);
+    createImfEl(basePath + '/Bushes/17.png', 100, f2);
+    createImfEl(basePath + '/Bushes/17.png', 13, f3);
+
+    //Fountain
+    createImfEl(basePath + '/Fountain/2.png', 116, f1);
+
+    //Box
+    createImfEl(basePath + '/Other/Box.png', 84, f1);
+    createImfEl(basePath + '/Other/Box.png', 48, f2);
+    createImfEl(basePath + '/Other/Box.png', 14, f3);
+    createImfEl(basePath + '/Other/Box.png', 104, f3);
+}
+
 const buildLevel = () => {
     let flor1 = 0;
     let flor2 = 4;
     let flor3 = 8;
+
+    addDecorationElements(flor1 + 1, flor2 + 1, flor3 + 1);
 
     createTilesPlatform(0, 14, flor1);
     createTilesPlatform(33, 41, flor1);
